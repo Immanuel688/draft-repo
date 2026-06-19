@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bridge ASSISTANT — New Incident</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #F5F4F0;
+      --surface:  #FFFFFF;
+      --border:   #DDDBD5;
+      --text:     #1A1916;
+      --muted:    #6B6860;
+      --accent:   #1A1916;
+      --p1:       #C0392B;
+      --p2:       #D68910;
+      --mono:     'IBM Plex Mono', monospace;
+      --sans:     'IBM Plex Sans', sans-serif;
+      --radius:   6px;
+    }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3rem 1rem;
+    }
+
+    header {
+      width: 100%;
+      max-width: 640px;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      background: var(--text);
+      color: var(--bg);
+      padding: 4px 10px;
+      border-radius: 3px;
+      display:inline-block;
+      margin-bottom:10px;
+    }
+
+    .header-title {
+      font-family: var(--sans);
+      font-size: 15px; 
+      font-weight:400;
+      color: var(--muted);
+    }
+
+    .step-bar {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      align-items: center;
+      margin-bottom: 2rem;
+      gap: 0;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .step.active { color: var(--text); }
+
+    .step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+
+    .step.active .step-num {
+      background: var(--text);
+      color: var(--bg);
+      border-color: var(--text);
+    }
+
+    .step-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+      margin: 0 8px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 600px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2.0rem;
+    }
+
+    .card-title {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .field { margin-bottom: 1.25rem; }
+    .field:last-of-type { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      letter-spacing: 0.05em;
+    }
+
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      font-family: var(--sans);
+      font-size: 14px;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 9px 12px;
+      outline: none;
+      transition: border-color 0.15s;
+      -webkit-appearance: none;
+    }
+
+    input[type="text"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--text);
+      background: var(--surface);
+    }
+
+    textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+
+    .priority-row { display: flex; gap: 10px; }
+
+    .priority-option {
+      flex: 1;
+      position: relative;
+    }
+
+    .priority-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+    }
+
+    .priority-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 13px;
+      background: var(--bg);
+      transition: all 0.15s;
+    }
+
+    .priority-option input:checked + .priority-label {
+      border-color: var(--text);
+      background: var(--surface);
+    }
+
+    .p1-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--p1); }
+    .p2-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--p2); }
+
+    .actions {
+      width: 100%;
+      max-width: 560px;
+      margin-top: 1rem;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-submit {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      color: var(--bg);
+      background: var(--text);
+      border: none;
+      border-radius: var(--radius);
+      padding: 10px 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: opacity 0.15s;
+    }
+
+    .btn-submit:hover { opacity: 0.8; }
+
+    .btn-submit svg { width: 14px; height: 14px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <span class="logo">BridgeOps AI</span>
+      <div class="header-title">
+        AI-Driven Major Incident Orchestration for IT Operations
+      </div>
+    </div> 
+  </header>
+
+  <div class="step-bar">
+    <div class="step active">
+      <div class="step-num">1</div>
+      Incident input
+    </div>
+    <div class="step-line"></div>
+    <div class="step">
+      <div class="step-num">2</div>
+      Review invite
+    </div>
+    <div class="step-line"></div>
+    <div class="step">
+      <div class="step-num">3</div>
+      Results
+    </div>
+    <div class="step-line"></div>
+    <div class="step">
+      <div class="step-num">4</div>
+      CIM status
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">New incident</div>
+
+    <form method="POST" action="/submit">
+
+      <div class="field">
+        <label for="ticket_id">Ticket ID</label>
+        <input type="text" id="ticket_id" name="ticket_id" placeholder="INC-0012345" required>
+      </div>
+
+      <div class="field">
+        <label>Priority</label>
+        <div class="priority-row">
+          <div class="priority-option">
+            <input type="radio" id="p1" name="priority" value="P1" checked>
+            <label class="priority-label" for="p1">
+              <span class="p1-dot"></span> P1 — Urgent
+            </label>
+          </div>
+          <div class="priority-option">
+            <input type="radio" id="p2" name="priority" value="P2">
+            <label class="priority-label" for="p2">
+              <span class="p2-dot"></span> P2 — High
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="subject">Subject</label>
+        <input type="text" id="subject" name="subject" placeholder="Subject of the incident" required>
+      </div>
+
+      <div class="field">
+        <label for="context">Additional context</label>
+        <textarea id="context" name="context" placeholder="Any context the bridge call teams should know upfront..."></textarea>
+      </div>
+
+      <div class="actions" style="margin-top: 1.5rem; max-width: 100%;">
+        <button class="btn-submit" type="submit">
+          Generate invite
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+</body>
+</html>
